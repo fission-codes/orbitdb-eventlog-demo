@@ -22,7 +22,7 @@ Overall OrbitDB was pleasant to work with as an alpha projects
 4. Extending and Creating new types of stores is a first class usecase. Useful if we want to have aggregate events or if we'd like to encrpyt more of the event itself.
 5. No real difference in use between single and multi user streams
 
-### Cons
+### Things to be aware of
 1. Using without IPFS pubsub degrades use as you would have to start polling for changes and remote peer updates would be hard if not impossible to track.
 2. Changing permissions of a database requires duplicating the database and distrbuting the new address. (i.e. its locked in at time of creation)
 

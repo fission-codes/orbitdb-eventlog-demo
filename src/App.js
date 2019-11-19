@@ -46,25 +46,37 @@ const LabeledDiv = ({label, value}) => <div>
   {value}
 </div>
 
-const InputPure = ({onSubmit, setFieldValue, placeholderText}) => <form onSubmit={onSubmit}>
-  <input
-    type='text'
-    placeholder={placeholderText}
-    onChange={(e) => setFieldValue(e.target.value)}
-  />
-</form>
+const SimpleInputPure = ({onSubmit, setFieldValue, placeholderText, fieldValue}) => (
+  <form onSubmit={onSubmit}>
+    <input
+      type='text'
+      value={fieldValue}
+      placeholder={placeholderText}
+      onChange={(e) => setFieldValue(e.target.value)}
+    />
+  </form>);
 
-const NameInput = compose(
+const SimpleInput = compose(
   withState('fieldValue', 'setFieldValue', ''),
-  withProps({placeholderText: 'Database Name'}),
   withHandlers({
-    onSubmit: ({setDbName, fieldValue}) => (event) => {
+    onSubmit: ({onSubmit, fieldValue, setFieldValue}) => (event) => {
       event.preventDefault()
       event.stopPropagation()
-      setDbName(fieldValue)
+      onSubmit(fieldValue)
+      setFieldValue('')
     },
   }),
-)(InputPure);
+)(SimpleInputPure);
+
+
+const NameInput = ({setDbName}) => <SimpleInput onSubmit={setDbName} placeholderText='Database Name'/>
+const AddEventInput = ({eventLog}) => <SimpleInput
+  onSubmit={(fieldValue) => {
+    console.dir('ADDDING VALUE', eventLog, fieldValue)
+    eventLog.add(`ENTRY WITH VALUE: ${fieldValue}`)
+  }}
+  placeholderText='Event to add'
+  />
 
 const ShowLogPure = ({log}) => <div>
     {
@@ -77,8 +89,10 @@ const ShowLog = compose(
   withHandlers({
     queryAndUpdateLog: ({eventLog, setLog}) => () => {
       console.log('updating log')
-      const result = eventLog.iterator({ limit: 5 }).collect()
-      console.dir('with result:', {result})
+      const result = eventLog
+        .iterator({ limit: -1 })
+        .collect()
+      console.dir({result})
       setLog(result)
     },
   }),
@@ -95,33 +109,19 @@ const ShowLog = compose(
 
       eventLog.events.on('replicate.progress', () => console.log('TODO: replicate.progress'))
 
-      // // Hook up to the load progress event and render the progress
-      // let maxTotal = 0;
-      // let loaded = 0;
-      // eventLog.events.on('load.progress', (address, hash, entry, progress, total) => {
-      //   loaded = loaded + 1
-      //   maxTotal = Math.max.apply(null, [maxTotal, progress, 0])
-      //   total = Math.max.apply(null, [progress, maxTotal, total, entry.clock.time, 0])
-      //   console.log(`Loading database... ${maxTotal} / ${total}`)
-      // })
+      // Hook up to the load progress event and render the progress
+      let maxTotal = 0;
+      let loaded = 0;
+      eventLog.events.on('load.progress', (address, hash, entry, progress, total) => {
+        loaded = loaded + 1
+        maxTotal = Math.max.apply(null, [maxTotal, progress, 0])
+        total = Math.max.apply(null, [progress, maxTotal, total, entry.clock.time, 0])
+        console.log(`Loading database... ${maxTotal} / ${total}`)
+      })
       eventLog.load()
     }
   })
 )(ShowLogPure);
-
-
-const AddEventInput = compose(
-  withState('fieldValue', 'setFieldValue', ''),
-  withProps({placeholderText: 'Event to add'}),
-  withHandlers({
-    onSubmit: ({eventLog, fieldValue}) => (event) => {
-      event.preventDefault()
-      event.stopPropagation()
-      console.dir('ADDDING VALUE', eventLog, fieldValue)
-      eventLog.add(`ENTRY WITH VALUE: ${fieldValue}`)
-    },
-  })
-)(InputPure)
 
 const EventLogStoreContainerPure = ({dbName, eventLog}) => (
   <div>

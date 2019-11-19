@@ -14,8 +14,11 @@ import OrbitDB from 'orbit-db';
 
 import './App.css';
 
-  // Create IPFS instance
-const ipfs = new IPFS({
+/*
+  ⚙️ SETTINGS
+*/
+
+const IPFS_SETTINGS = {
   repo: '/orbitdb/examples/browser/new/ipfs/0.33.1',
   start: true,
   preload: {
@@ -35,7 +38,34 @@ const ipfs = new IPFS({
       ]
     },
   }
-})
+}
+
+const LOCAL_DB_SETTINGS = {
+  // If database doesn't exist, create it
+  create: true,
+  overwrite: true,
+  // Load only the local version of the database,
+  // don't load the latest from the network yet
+  localOnly: false,
+  type: 'eventlog',
+  // If "Public" flag is set, allow anyone to write to the database,
+  // otherwise only the creator of the database can write
+  accessController: {
+    write: ['*'],
+  }
+};
+
+const REMOTE_DB_SETTINGS = {sync: true}
+
+/*
+  🛰 IPFS
+*/
+
+const ipfs = new IPFS(IPFS_SETTINGS)
+
+/*
+  🛠 UTIL COMPONENTS
+*/
 
 const ErrorState = () => <div>IPFS FAILED TO CONNECT</div>
 const LoadingState = () => <div>Loading...</div>
@@ -67,6 +97,9 @@ const SimpleInput = compose(
   }),
 )(SimpleInputPure);
 
+/*
+  🎨 UI COMPONENTS
+*/
 
 const NameInput = ({setDbName}) => <SimpleInput onSubmit={setDbName} placeholderText='Database Name'/>
 const AddEventInput = ({eventLog}) => <SimpleInput
@@ -77,15 +110,15 @@ const AddEventInput = ({eventLog}) => <SimpleInput
   placeholderText='Event to add'
   />
 
-const ShowLogPure = ({log}) => <div>
-    {
-      log.slice().reverse().map((e) => <div>{e.payload.value}</div>)
-    }
-  </div>
+/**
+ * Show the contents of the Event log
+ */
+const ShowLogPure = ({log}) => <div>{log.slice().reverse().map((e) => <div>{e.payload.value}</div>)}</div>
 
 const ShowLog = compose(
   withState('log', 'setLog', []),
   withHandlers({
+    // A function meant for querying for new data in the open database
     queryAndUpdateLog: ({eventLog, setLog}) => () => {
       console.log('updating log')
       const result = eventLog
@@ -96,16 +129,19 @@ const ShowLog = compose(
     },
   }),
   lifecycle({
+    // Attach the eventlog event listeners and load the database
     componentWillMount() {
-      console.log('WILLMOUNTLOG')
       const {eventLog, queryAndUpdateLog} = this.props
       // When the database is ready (ie. loaded), display results
       eventLog.events.on('ready', queryAndUpdateLog)
+
       // When database gets replicated with a peer, display results
       eventLog.events.on('replicated', queryAndUpdateLog)
+
       // When we update the database, display result
       eventLog.events.on('write', queryAndUpdateLog)
 
+      // This can be used to know when peer information has changed
       eventLog.events.on('replicate.progress', () => console.log('TODO: replicate.progress'))
 
       // Hook up to the load progress event and render the progress
@@ -122,6 +158,13 @@ const ShowLog = compose(
   })
 )(ShowLogPure);
 
+/*
+  📦 CONTAINERS
+*/
+
+/**
+ * Display the data for the given orbit db event log
+ */
 const EventLogStoreContainerPure = ({dbName, eventLog}) => (
   <div>
     <LabeledDiv label='DB name' value={dbName}/>
@@ -130,23 +173,6 @@ const EventLogStoreContainerPure = ({dbName, eventLog}) => (
     <AddEventInput eventLog={eventLog} />
   </div>
 );
-
-const LOCAL_DB_SETTINGS = {
-  // If database doesn't exist, create it
-  create: true,
-  overwrite: true,
-  // Load only the local version of the database,
-  // don't load the latest from the network yet
-  localOnly: false,
-  type: 'eventlog',
-  // If "Public" flag is set, allow anyone to write to the database,
-  // otherwise only the creator of the database can write
-  accessController: {
-    write: ['*'],
-  }
-};
-
-const REMOTE_DB_SETTINGS = {sync: true}
 
 const EventLogStoreContainer = compose(
   withState('dbName', 'setDbName', undefined),
@@ -171,7 +197,9 @@ const EventLogStoreContainer = compose(
 
 )(EventLogStoreContainerPure)
 
-
+/**
+ * Set up the UI for interacting with the OrbitDB instance
+ */
 const AppPure = ({orbitdb}) => (
   <div className="App">
     <LabeledDiv label='PEER ID' value={orbitdb.id}/>
@@ -183,12 +211,16 @@ const App = compose(
   withState('orbitdb', 'setDB', undefined),
   withState('error', 'setError', false),
   lifecycle({
+    // Set up IPFS event listeners
     componentWillMount() {
       const {setDB, setError} = this.props;
+
       ipfs.on('error', (e) => {
         console.error(e)
         setError(true)
       })
+
+      // Create OrbitDB instance when IPFS is ready
       ipfs.on('ready', async () => {
         console.log("IPFS Started")
         const orbitdb = await OrbitDB.createInstance(ipfs)

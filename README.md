@@ -1,4 +1,31 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+_This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app)._
+# OrbitDB Demo App
+This intent of this app was to show how easy it was to create a shared eventlog between two remote nodes using orbit db.
+
+## To run
+1. In your terminal run `yarn start`
+2. In chrome open http://localhost:3000
+3. Type in the database name `test`
+4. Copy the db address given
+5. Open firefox to http://localhost:3000
+6. Use the DB address from step 4 as the DB name
+
+Now as you add new entries in either browser you should see the data sync to the other.
+
+## Findings
+Overall OrbitDB was pleasant to work with as an alpha projects
+
+### Pros
+1. Payloads easily encrypted
+2. Useful helpers for creating and loading snapshots
+3. Useful helpers for syncing with remote peers
+4. Extending and Creating new types of stores is a first class usecase. Useful if we want to have aggregate events or if we'd like to encrpyt more of the event itself.
+5. No real difference in use between single and multi user streams
+
+### Cons
+1. Using without IPFS pubsub degrades use as you would have to start polling for changes and remote peer updates would be hard if not impossible to track.
+2. Changing permissions of a database requires duplicating the database and distrbuting the new address. (i.e. its locked in at time of creation)
+
 
 ## Available Scripts
 

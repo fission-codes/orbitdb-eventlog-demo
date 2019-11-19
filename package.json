@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "ipfs": "^0.39.0",
+    "lodash": "^4.17.15",
     "orbit-db": "^0.22.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",

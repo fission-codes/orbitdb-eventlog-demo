@@ -3,7 +3,6 @@ import React from 'react';
 import compose from 'recompose/compose';
 
 import withState from 'recompose/withState';
-import withProps from 'recompose/withProps';
 import withHandlers from 'recompose/withHandlers';
 
 import lifecycle from 'recompose/lifecycle';
@@ -103,7 +102,7 @@ const ShowLog = compose(
       // When the database is ready (ie. loaded), display results
       eventLog.events.on('ready', queryAndUpdateLog)
       // When database gets replicated with a peer, display results
-      eventLog.events.on('replicated', () => console.log('TODO: replicated'))
+      eventLog.events.on('replicated', queryAndUpdateLog)
       // When we update the database, display result
       eventLog.events.on('write', queryAndUpdateLog)
 
@@ -132,6 +131,22 @@ const EventLogStoreContainerPure = ({dbName, eventLog}) => (
   </div>
 );
 
+const LOCAL_DB_SETTINGS = {
+  // If database doesn't exist, create it
+  create: true,
+  overwrite: true,
+  // Load only the local version of the database,
+  // don't load the latest from the network yet
+  localOnly: false,
+  type: 'eventlog',
+  // If "Public" flag is set, allow anyone to write to the database,
+  // otherwise only the creator of the database can write
+  accessController: {
+    write: ['*'],
+  }
+};
+
+const REMOTE_DB_SETTINGS = {sync: true}
 
 const EventLogStoreContainer = compose(
   withState('dbName', 'setDbName', undefined),
@@ -140,23 +155,16 @@ const EventLogStoreContainer = compose(
   lifecycle({
     componentWillMount() {
       const {setEventLog, orbitdb, dbName} = this.props;
-      orbitdb.open(dbName, {
-        // If database doesn't exist, create it
-        create: true,
-        overwrite: true,
-        // Load only the local version of the database,
-        // don't load the latest from the network yet
-        localOnly: false,
-        type: 'eventlog',
-        // If "Public" flag is set, allow anyone to write to the database,
-        // otherwise only the creator of the database can write
-        accessController: {
-          write: ['*'],
-        }
-      }).then(db => {
-        console.log('WHAT', {db})
-        setEventLog(db)
-      })
+      const connectionSettings = OrbitDB.isValidAddress(dbName)
+        ? REMOTE_DB_SETTINGS
+        : LOCAL_DB_SETTINGS;
+      console.dir({connectionSettings})
+      orbitdb
+        .open(dbName, connectionSettings)
+        .then(db => {
+          console.log('WHAT', {db})
+          setEventLog(db)
+        })
     },
   }),
   branch(({eventLog}) => !eventLog, renderComponent(LoadingState)),

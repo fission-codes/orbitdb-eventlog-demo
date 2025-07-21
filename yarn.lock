@@ -1155,10 +1155,17 @@
     "@hapi/joi" "16.x.x"
     "@hapi/podium" "3.x.x"
 
-"@hapi/content@4.x.x", "@hapi/content@^4.1.0":
+"@hapi/content@^4.1.0":
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/@hapi/content/-/content-4.1.0.tgz#5265516949ca081e85a43e97c1058ff53fc69714"
   integrity sha512-hv2Czsl49hnWDEfRZOFow/BmYbKyfEknmk3k83gOp6moFn5ceHB4xVcna8OwsGfy8dxO81lhpPy+JgQEaU4SWw==
+  dependencies:
+    "@hapi/boom" "7.x.x"
+
+"@hapi/content@^4.1.1":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@hapi/content/-/content-4.1.1.tgz#179673d1e2b7eb36c564d8f9605d019bd2252cbf"
+  integrity sha512-3TWvmwpVPxFSF3KBjKZ8yDqIKKZZIm7VurDSweYpXYENZrJH3C1hd1+qEQW9wQaUaI76pPBLGrXl6I3B7i3ipA==
   dependencies:
     "@hapi/boom" "7.x.x"
 
@@ -1277,14 +1284,14 @@
     "@hapi/hoek" "8.x.x"
     "@hapi/vise" "3.x.x"
 
-"@hapi/pez@4.x.x":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@hapi/pez/-/pez-4.1.1.tgz#d515ed75bc082cb6da3ab8d7804a3b41a4d63be6"
-  integrity sha512-TUa2C7Xk6J69HWrm+Ad+O6dFvdVAG0BiFUYaRsmkdWjFIfwHBCaOI1dWT/juNukSb39Lj6/mDVyjN+H4nKB3xg==
+"@hapi/pez@^4.1.2":
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/@hapi/pez/-/pez-4.1.2.tgz#14984d0c31fed348f10c962968a21d9761f55503"
+  integrity sha512-8zSdJ8cZrJLFldTgwjU9Fb1JebID+aBCrCsycgqKYe0OZtM2r3Yv3aAwW5z97VsZWCROC1Vx6Mdn4rujh5Ktcg==
   dependencies:
     "@hapi/b64" "4.x.x"
     "@hapi/boom" "7.x.x"
-    "@hapi/content" "4.x.x"
+    "@hapi/content" "^4.1.1"
     "@hapi/hoek" "8.x.x"
     "@hapi/nigel" "3.x.x"
 
@@ -1331,16 +1338,16 @@
     "@hapi/joi" "16.x.x"
 
 "@hapi/subtext@6.x.x":
-  version "6.1.2"
-  resolved "https://registry.yarnpkg.com/@hapi/subtext/-/subtext-6.1.2.tgz#87754f0c25b4e2676575a3686541e5b555b0c717"
-  integrity sha512-G1kqD1E2QdxpvpL26WieIyo3z0qCa/sAGSa2TJI/PYPWCR9rL0rqFvhWY774xPZ4uK1PV3TIaJcx8AruAvxclg==
+  version "6.1.3"
+  resolved "https://registry.yarnpkg.com/@hapi/subtext/-/subtext-6.1.3.tgz#bbd07771ae2a4e73ac360c93ed74ac641718b9c6"
+  integrity sha512-qWN6NbiHNzohVcJMeAlpku/vzbyH4zIpnnMPMPioQMwIxbPFKeNViDCNI6fVBbMPBiw/xB4FjqiJkRG5P9eWWg==
   dependencies:
     "@hapi/boom" "7.x.x"
     "@hapi/bourne" "1.x.x"
-    "@hapi/content" "4.x.x"
+    "@hapi/content" "^4.1.1"
     "@hapi/file" "1.x.x"
     "@hapi/hoek" "8.x.x"
-    "@hapi/pez" "4.x.x"
+    "@hapi/pez" "^4.1.2"
     "@hapi/wreck" "15.x.x"
 
 "@hapi/teamwork@3.x.x":

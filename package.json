@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "ipfs": "^0.39.0",
-    "lodash": "^4.17.15",
+    "ipfs": "^0.66.1",
+    "lodash": "^4.17.23",
     "orbit-db": "^0.22.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
